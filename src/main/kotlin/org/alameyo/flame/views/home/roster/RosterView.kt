@@ -7,6 +7,8 @@ import org.alameyo.flame.controllers.chat.ChatAreaController
 import org.alameyo.flame.css.FlameStyle
 import org.alameyo.flame.css.FlameStyle.Companion.rosterList
 import org.alameyo.flame.models.FlameContactEntry
+import org.alameyo.flame.views.home.contact.ContactView
+import org.jxmpp.jid.impl.JidCreate
 import tornadofx.*
 
 class RosterView : View() {
@@ -14,17 +16,24 @@ class RosterView : View() {
     private val flameController: FlameController by inject()
     private val rosterController = flameController.rosterController
     private val chatAreaController: ChatAreaController by inject()
+    private val contactView: ContactView by inject()
 
     override val root = scrollpane {
         vbox {
             hbox {
                 addClass(rosterList)
                 button {
-                    val image = imageview("UI/Friend_Add.png")
+                    var image = imageview("UI/Friend_Add.png")
                     fitImageToButton(image, this)
                     addClass(FlameStyle.roundButton)
                     action {
-
+                        runAsync {
+                            rosterController.addContactToRoster(JidCreate.bareFrom("tester2@alameyo.gq"))
+                        } ui {
+                            contactView.replaceWith<AddContactView>()
+                            image = imageview("UI/Friends_Add_Actie.png")
+                            fitImageToButton(image, this)
+                        }
                     }
                 }
             }
