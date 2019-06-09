@@ -13,10 +13,18 @@ class RosterController(private val roster: Roster) : Controller() {
         return roster.entries
     }
 
-    fun addContactToRoster(bareJid: BareJid)  {
+    fun addContactToRoster(bareJid: BareJid, name: String?) {
         roster.reloadAndWait()
-        roster.createEntry(bareJid, "tester2", null )
+        val formattedName = giveName(name, bareJid)
+        roster.createEntry(bareJid, formattedName, null)
         roster.reloadAndWait()
         roster.sendSubscriptionRequest(bareJid)
+    }
+
+    private fun giveName(name: String?, bareJid: BareJid): String? {
+        return when {
+            !name.isNullOrEmpty() -> name
+            else -> bareJid.localpartOrNull.toString()
+        }
     }
 }
